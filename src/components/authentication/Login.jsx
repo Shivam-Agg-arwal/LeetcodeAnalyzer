@@ -9,6 +9,7 @@ import { setUser } from "../../slices/profileSlice";
 import toast from "react-hot-toast";
 import { RiLockPasswordLine } from "react-icons/ri";
 import { IoPerson } from "react-icons/io5";
+import login from "../../images/Login.jpg"
 
 export const Login = () => {
     const {
@@ -150,7 +151,7 @@ export const Login = () => {
                     <div className="w-1/2 flex justify-center items-center bg-transaparent pl-8">
                         <div className="w-full flex flex-col gap-8">
                             <img
-                                src="https://www.go.ooo/img/bg-img/Login.jpg"
+                                src={login}
                                 alt="login-img"
                                 className=""
                             />

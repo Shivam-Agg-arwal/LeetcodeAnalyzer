@@ -18,7 +18,7 @@ app.use(cookieParser());
 app.use(express.json());
 app.use(express.urlencoded({ extended: true })); // For URL-encoded payloads
 app.use(cors({
-    origin: "http://localhost:3000",
+    origin: ["http://localhost:3000","https://leetcode-analyzer.vercel.app"],
     credentials: true,  // Allow cookies and other credentials
 }));
 dbConnect();

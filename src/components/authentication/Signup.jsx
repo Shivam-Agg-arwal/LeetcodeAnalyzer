@@ -9,7 +9,7 @@ import { useSelector } from "react-redux";
 import { MdEmail } from "react-icons/md";
 import { RiLockPasswordFill, RiLockPasswordLine } from "react-icons/ri";
 import axios from "axios";
-// import { FormData } from "node-fetch";
+import signup from "../../images/Signup.png"
 
 function Signup() {
     const {
@@ -154,7 +154,7 @@ function Signup() {
                 <div className="w-1/2 flex justify-center items-center bg-transparent pl-8">
                     <div className="w-full flex flex-col gap-8">
                         <img
-                            src="https://theuniqueacademy.co.in/assets/images/test.png"
+                            src={signup}
                             alt="signup-img"
                             className="md:h-full md:w-full"
                         />
