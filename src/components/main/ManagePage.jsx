@@ -32,6 +32,7 @@ const ManagePage = () => {
                     },
                 }
             );
+            console.log(response);
             const result = response.data;
             if (!result.success) {
                 throw new Error("Error occurred while adding the Leetcode ID");

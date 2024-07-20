@@ -9,6 +9,7 @@ export const AddLeetcodeId = async (req, res) => {
     try {
         const userId = req.user.id;
         const { leetcodeId } = req.body;
+        console.log("basic data",leetcodeId,userId);
 
         if (!userId || !leetcodeId) {
             return res.status(400).json({
@@ -16,7 +17,9 @@ export const AddLeetcodeId = async (req, res) => {
                 message: "Insufficient data",
             });
         }
-
+        
+        
+        
         const user = await User.findById(userId);
         if (!user) {
             return res.status(404).json({
@@ -24,6 +27,7 @@ export const AddLeetcodeId = async (req, res) => {
                 message: "User does not exist",
             });
         }
+        console.log("user found")
 
         let leetcodeDetails = await LeetcodeID.findOne({
             username: leetcodeId,
@@ -37,6 +41,8 @@ export const AddLeetcodeId = async (req, res) => {
         const leetcodeIdPresent = user.linkedto.some(
             (lId) => lId && lId.equals(leetcodeDetails._id)
         );
+
+        console.log("reached");
         if (leetcodeIdPresent) {
             return res.status(400).json({
                 success: false,
@@ -51,11 +57,13 @@ export const AddLeetcodeId = async (req, res) => {
                 message: "Invalid Leetcode ID",
             });
         }
+        console.log(response);
 
         const currDate = dateFinder();
         if (user.linkedto.length === 0) {
             user.startDate = currDate;
         }
+        console.log("ehre");
 
         const organizedStats = preprocessStats(
             response,
