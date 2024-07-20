@@ -16,9 +16,11 @@ dotenv.config();
 const PORT=process.env.PORT||4000;
 app.use(cookieParser());
 app.use(express.json());
-
-app.use(cors({origin:"http://localhost:3001",credentials:true}))
-
+app.use(express.urlencoded({ extended: true })); // For URL-encoded payloads
+app.use(cors({
+    origin: "http://localhost:3000",
+    credentials: true,  // Allow cookies and other credentials
+}));
 dbConnect();
 
 cron.schedule('0 22 * * *', async () => {

@@ -8,52 +8,52 @@ import Statistics from "../models/Statistics.js";
 export const AddLeetcodeId = async (req, res) => {
     try {
         const userId = req.user.id;
-        let { leetcodeId } = req.body;
+        const { leetcodeId } = req.body;
 
         if (!userId || !leetcodeId) {
-            return res.status(500).json({
+            return res.status(400).json({
                 success: false,
-                message: "Insuffient data",
+                message: "Insufficient data",
             });
         }
 
         const user = await User.findById(userId);
         if (!user) {
-            return res.status(500).json({
+            return res.status(404).json({
                 success: false,
-                message: "User dont exist",
+                message: "User does not exist",
             });
         }
 
         let leetcodeDetails = await LeetcodeID.findOne({
             username: leetcodeId,
-        });
+        }).populate("stats");
         if (!leetcodeDetails) {
-            leetcodeDetails = await LeetcodeID.create({ username: leetcodeId });
+            leetcodeDetails = await LeetcodeID.create({
+                username: leetcodeId,
+            }).populate("stats");
         }
 
-        const leetcodeIdPresent = user.linkedto.find((lId) =>
-            lId.equals(leetcodeDetails._id)
+        const leetcodeIdPresent = user.linkedto.some(
+            (lId) => lId && lId.equals(leetcodeDetails._id)
         );
         if (leetcodeIdPresent) {
-            return res.status(500).json({
+            return res.status(400).json({
                 success: false,
-                message: "Leetcode Id is already added",
+                message: "Leetcode ID is already added",
             });
         }
 
         const response = await fetchLeetcodeStats(leetcodeId);
         if (response.status !== "success") {
-            return res.status(500).json({
+            return res.status(400).json({
                 success: false,
-                message: "Leetcode Id is invalid",
+                message: "Invalid Leetcode ID",
             });
         }
 
-        //ab is id ko user ko dedo
-
         const currDate = dateFinder();
-        if (user.linkedto.length == 0) {
+        if (user.linkedto.length === 0) {
             user.startDate = currDate;
         }
 
@@ -62,10 +62,9 @@ export const AddLeetcodeId = async (req, res) => {
             leetcodeDetails._id,
             currDate
         );
+
         user.linkedto.push(leetcodeDetails._id);
         await user.save();
-
-        //dekho agar y leetcode m h nhi h toh daldo
 
         leetcodeDetails.linkedUsers.push(userId);
 
@@ -81,12 +80,11 @@ export const AddLeetcodeId = async (req, res) => {
             const lastStat =
                 leetcodeDetails.stats[leetcodeDetails.stats.length - 1];
             if (lastStat.date === currDate) {
-                leetcodeDetails.stats.pop(); // Remove the last entry if the date matches
+                leetcodeDetails.stats.pop();
                 await Statistics.findByIdAndDelete(lastStat._id);
             }
         }
         leetcodeDetails.stats.push(statsDetails);
-
         await leetcodeDetails.save();
 
         const updatedUser = await User.findById(userId).populate({
@@ -99,14 +97,14 @@ export const AddLeetcodeId = async (req, res) => {
         updatedUser.password = undefined;
         return res.status(200).json({
             success: true,
-            message: "Id Added Successfully",
+            message: "Leetcode ID added successfully",
             data: updatedUser,
         });
     } catch (error) {
-        console.log("error occured while addign the id ", error.message);
+        console.error("Error occurred while adding the ID:", error.message);
         return res.status(500).json({
             success: false,
-            message: "Error during addtion of id ",
+            message: "Error occurred while adding the ID",
         });
     }
 };
@@ -114,60 +112,56 @@ export const AddLeetcodeId = async (req, res) => {
 export const RemoveLeetcodeId = async (req, res) => {
     try {
         const userId = req.user.id;
-        let { leetcodeId } = req.body;
+        const { leetcodeId } = req.body;
 
         if (!userId || !leetcodeId) {
-            return res.status(500).json({
+            return res.status(400).json({
                 success: false,
-                message: "Insuffient data",
+                message: "Insufficient data",
             });
         }
 
         const user = await User.findById(userId);
         if (!user) {
-            return res.status(500).json({
+            return res.status(404).json({
                 success: false,
-                message: "User dont exist",
+                message: "User does not exist",
             });
         }
-        let leetcodeDetails = await LeetcodeID.findOne({
+
+        const leetcodeDetails = await LeetcodeID.findOne({
             username: leetcodeId,
         });
         if (!leetcodeDetails) {
             user.password = undefined;
             return res.status(200).json({
                 success: true,
-                message: "Leetcode Id already abssent",
+                message: "Leetcode ID already absent",
                 data: user,
             });
         }
 
-        const leetcodeIdPresent = user.linkedto.find((lId) =>
+        const leetcodeIdPresent = user.linkedto.some((lId) =>
             lId.equals(leetcodeDetails._id)
         );
         if (!leetcodeIdPresent) {
             user.password = undefined;
             return res.status(200).json({
                 success: true,
-                message: "Leetcode Id already abssent",
+                message: "Leetcode ID already absent",
                 data: user,
             });
         }
 
-        const updatedlinks = user.linkedto.filter(
+        user.linkedto = user.linkedto.filter(
             (lId) => !lId.equals(leetcodeDetails._id)
         );
-        user.linkedto = updatedlinks;
         await user.save();
 
-        const leetcodeIdDetails = await LeetcodeID.findOne({
-            username: leetcodeId,
-        });
-        const updatedLinked = leetcodeIdDetails.linkedUsers.filter(
+        leetcodeDetails.linkedUsers = leetcodeDetails.linkedUsers.filter(
             (people) => !people.equals(userId)
         );
-        leetcodeIdDetails.linkedUsers = updatedLinked;
-        await leetcodeIdDetails.save();
+        await leetcodeDetails.save();
 
         const updatedUser = await User.findById(userId).populate({
             path: "linkedto",
@@ -179,14 +173,14 @@ export const RemoveLeetcodeId = async (req, res) => {
 
         return res.status(200).json({
             success: true,
-            message: "Id Removed Successfully",
+            message: "Leetcode ID removed successfully",
             data: updatedUser,
         });
     } catch (error) {
-        console.log("Error occured during removal of id", error.message);
+        console.error("Error occurred while removing the ID:", error.message);
         return res.status(500).json({
             success: false,
-            message: "Error occured during removal of id ",
+            message: "Error occurred while removing the ID",
         });
     }
 };
@@ -212,30 +206,36 @@ export const fetchData = async (req, res) => {
 
         const currDate = dateFinder();
 
-        // Map async operations and handle them with Promise.all
         const updateLinkedToPromises = user.linkedto.map(async (id) => {
             try {
-                const leetcodeDetails = await LeetcodeID.findById(id);
+                const leetcodeDetails = await LeetcodeID.findById(id).populate(
+                    "stats"
+                );
                 if (!leetcodeDetails) {
                     console.warn(`Leetcode ID ${id} not found`);
                     return;
                 }
-                
-                const response = await fetchLeetcodeStats(leetcodeDetails.username);
+
+                const response = await fetchLeetcodeStats(
+                    leetcodeDetails.username
+                );
                 if (response.status === "success") {
                     const organizedStats = preprocessStats(
                         response,
                         leetcodeDetails._id,
                         currDate
                     );
-
-                    const statsDetails = await Statistics.create(organizedStats);
+                    const statsDetails = await Statistics.create(
+                        organizedStats
+                    );
 
                     if (leetcodeDetails.stats.length > 0) {
                         const lastStat =
-                            leetcodeDetails.stats[leetcodeDetails.stats.length - 1];
+                            leetcodeDetails.stats[
+                                leetcodeDetails.stats.length - 1
+                            ];
                         if (lastStat.date === currDate) {
-                            leetcodeDetails.stats.pop(); // Remove the last entry if the date matches
+                            leetcodeDetails.stats.pop();
                             await Statistics.findByIdAndDelete(lastStat._id);
                         }
                     }
@@ -243,14 +243,18 @@ export const fetchData = async (req, res) => {
                     leetcodeDetails.stats.push(statsDetails);
                     await leetcodeDetails.save();
                 } else {
-                    console.warn(`Failed to fetch stats for ${leetcodeDetails.username}`);
+                    console.warn(
+                        `Failed to fetch stats for ${leetcodeDetails.username}`
+                    );
                 }
             } catch (error) {
-                console.error(`Error processing Leetcode ID ${id}:`, error.message);
+                console.error(
+                    `Error processing Leetcode ID ${id}:`,
+                    error.message
+                );
             }
         });
 
-        // Await all the promises
         await Promise.all(updateLinkedToPromises);
 
         const updatedUser = await User.findById(userId).populate({
@@ -276,49 +280,69 @@ export const fetchData = async (req, res) => {
     }
 };
 
-
 export const autoUpdate = async (req, res) => {
     try {
-        const leetcodeProfiles = await LeetcodeID.find({}).populate('stats').exec();
-
+        const leetcodeProfiles = await LeetcodeID.find({})
+            .populate("stats")
+            .exec();
         const currDate = dateFinder();
-        const updateLinkedToPromises = leetcodeProfiles.map(async (leetcodeDetails) => {
-            try {
-                const response = await fetchLeetcodeStats(leetcodeDetails.username);
-                // console.log(response);
-                if (response && response?.status === "success") {
-                    const organizedStats = preprocessStats(
-                        response,
-                        leetcodeDetails._id,
-                        currDate
+
+        const updateLinkedToPromises = leetcodeProfiles.map(
+            async (leetcodeDetails) => {
+                try {
+                    const response = await fetchLeetcodeStats(
+                        leetcodeDetails.username
                     );
+                    if (response && response.status === "success") {
+                        const organizedStats = preprocessStats(
+                            response,
+                            leetcodeDetails._id,
+                            currDate
+                        );
+                        const statsDetails = await Statistics.create(
+                            organizedStats
+                        );
 
-                    const statsDetails = await Statistics.create(organizedStats);
-                    if (leetcodeDetails.stats.length > 0) {
-                        const lastStat =
-                            leetcodeDetails.stats[leetcodeDetails.stats.length - 1];
-                        if (lastStat.date === currDate) {
-                            leetcodeDetails.stats.pop(); // Remove the last entry if the date matches
-                            await Statistics.findByIdAndDelete(lastStat._id);
+                        if (leetcodeDetails.stats.length > 0) {
+                            const lastStat =
+                                leetcodeDetails.stats[
+                                    leetcodeDetails.stats.length - 1
+                                ];
+                            if (lastStat.date === currDate) {
+                                leetcodeDetails.stats.pop();
+                                await Statistics.findByIdAndDelete(
+                                    lastStat._id
+                                );
+                            }
                         }
+
+                        leetcodeDetails.stats.push(statsDetails);
+                        await leetcodeDetails.save();
+                    } else {
+                        console.warn(
+                            `Failed to fetch stats for ${leetcodeDetails.username}`
+                        );
                     }
-
-                    leetcodeDetails.stats.push(statsDetails);
-                    await leetcodeDetails.save();
-                } else {
-                    console.warn(`Failed to fetch stats for ${leetcodeDetails.username}`);
+                } catch (error) {
+                    console.error(
+                        `Error processing Leetcode ID ${leetcodeDetails._id}:`,
+                        error.message
+                    );
                 }
-            } catch (error) {
-                console.error(`Error processing Leetcode ID ${leetcodeDetails._id}:`, error.message);
             }
-        });
+        );
 
-        // Await all the promises
         await Promise.all(updateLinkedToPromises);
 
-        
-
+        return res.status(200).json({
+            success: true,
+            message: "Auto-update completed successfully",
+        });
     } catch (error) {
-        console.error("Error occurred while auto updating:", error.message);
+        console.error("Error occurred while auto-updating:", error.message);
+        return res.status(500).json({
+            success: false,
+            message: "Error occurred while auto-updating",
+        });
     }
 };

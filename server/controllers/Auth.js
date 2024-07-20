@@ -7,6 +7,7 @@ import jwt from 'jsonwebtoken'
 // Function to send OTP
 export const sendOTP = async (req, res) => {
     try {
+        console.log(req.body)
         const { email } = req.body;
         if (!email) {
             return res.status(400).json({
@@ -58,6 +59,7 @@ export const sendOTP = async (req, res) => {
 export const signIn = async (req, res) => {
     try {
         const { email, password, otp } = req.body;
+        console.log(req.body);
         if (!email || !password || !otp) {
             return res.status(400).json({
                 success: false,
@@ -95,7 +97,9 @@ export const signIn = async (req, res) => {
         }
 
         // Validate OTP
-        if (otpEntry.otp !== otp) {
+        console.log(otpEntry.otp);
+        console.log(otp);
+        if (otpEntry.otp !== Number(otp)) {
             return res.status(400).json({
                 success: false,
                 message: "Incorrect OTP",
@@ -124,6 +128,7 @@ export const signIn = async (req, res) => {
 
 export const login=async(req,res)=>{
     try{
+        console.log(req.body);
         const {email,password}=req.body;
 
         if(!email || !password){
