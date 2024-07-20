@@ -33,13 +33,11 @@ function Signup() {
     }, [user, navigate]);
 
     const { SEND_OTP_API ,LOGIN_API,SIGNUP_API} = authenticationEndpoints;
-    console.log(authenticationEndpoints);
     const password = watch("password"); // Watch the password field
 
     const onSubmit = async (data) => {
         setLoading(true);
         try {
-            console.log(SEND_OTP_API);
             const response = await axios.post(SEND_OTP_API, {email: data.email}, {
                 headers: {
                     'Content-Type': 'application/json', // Ensure this header is set
@@ -64,7 +62,7 @@ function Signup() {
     };
 
     return (
-        <div className="md:w-full md:h-screen flex justify-center items-center bg-bgWhite">
+        <div className="md:w-full md:h-screen flex justify-center items-center bg-[#e9edf0]">
             <div className="w-7/12 mx-auto bg-white rounded-lg shadow-lg flex flex-row justify-between py-12 pl-20 pr-14">
                 {/* Left Side */}
                 <div className="flex items-start justify-center w-1/2 h-full flex-col pr-4">
@@ -81,7 +79,7 @@ function Signup() {
                                     <div className="flex flex-row items-center mt-1">
                                         <MdEmail />
                                     </div>
-                                    <div>
+                                    <div className="w-full">
                                         <input
                                             type="email"
                                             placeholder="Enter your email"
@@ -102,7 +100,7 @@ function Signup() {
                                     <div className="flex flex-row items-center mt-1">
                                         <RiLockPasswordFill />
                                     </div>
-                                    <div>
+                                    <div className="w-full">
                                         <input
                                             type="password"
                                             placeholder="Enter password"
@@ -123,7 +121,7 @@ function Signup() {
                                     <div className="flex flex-row items-center mt-1">
                                         <RiLockPasswordLine />
                                     </div>
-                                    <div>
+                                    <div className="w-full">
                                         <input
                                             type="password"
                                             placeholder="Confirm password"

@@ -12,17 +12,16 @@ import Loader from "../common/Loader";
 const ManagePage = () => {
     const [leetcodeId, setLeetcodeId] = useState("");
     const [loading, setLoading] = useState(false);
-    const [RemovingId, setRemovingId] = useState(false);
-    const { token } = useSelector((state) => state.profile);
+    const [removingId, setRemovingId] = useState(null);
+    const { token, user } = useSelector((state) => state.profile);
     const dispatch = useDispatch();
-    const { user } = useSelector((state) => state.profile);
 
-    const { ADD_ID_API, REMOVE_ID_API, FETCH_DATA_API } = managementEndpoints;
+    const { ADD_ID_API, REMOVE_ID_API } = managementEndpoints;
 
     const addLeetcodeId = async () => {
         setLoading(true);
         try {
-            if (!leetcodeId || leetcodeId.length === 0) return;
+            if (!leetcodeId) return;
 
             const response = await axios.post(
                 ADD_ID_API,
@@ -33,24 +32,19 @@ const ManagePage = () => {
                     },
                 }
             );
-            console.log(response);
             const result = response.data;
             if (!result.success) {
-                throw new Error(
-                    "Error occurred while adding the Leetcode ID"
-                );
+                throw new Error("Error occurred while adding the Leetcode ID");
             }
 
             dispatch(setUser(result.data));
             toast.success("Leetcode username added");
         } catch (error) {
-            console.log(
-                "Error occurred while adding the Leetcode ID ",
-                error.message
-            );
+            console.log("Error occurred while adding the Leetcode ID", error.message);
             toast.error("Failed to add Leetcode ID");
         } finally {
             setLoading(false);
+            setLeetcodeId("");
         }
     };
 
@@ -66,12 +60,9 @@ const ManagePage = () => {
                     },
                 }
             );
-            console.log(response);
             const result = response.data;
             if (!result.success) {
-                throw new Error(
-                    "Error occurred while removing the Leetcode ID"
-                );
+                throw new Error("Error occurred while removing the Leetcode ID");
             }
 
             dispatch(setUser(result.data));
@@ -86,8 +77,8 @@ const ManagePage = () => {
 
     return (
         <div className="flex flex-col items-center p-5 w-10/12 mx-auto">
-            <div className="w-full max-w-xl mb-6 mx-auto">
-                <div className="flex items-center justify-between border-b-2 border-black pb-1 w-[500px]">
+            <div className="max-w-xl mb-6 mx-auto md:w-[500px] w-[80%] ">
+                <div className="flex items-center justify-between border-b-2 border-black pb-1 ">
                     <div className="flex items-center gap-4">
                         <MdSupervisorAccount className="text-xl" />
                         <input
@@ -95,7 +86,7 @@ const ManagePage = () => {
                             onChange={(e) => setLeetcodeId(e.target.value)}
                             type="text"
                             placeholder="Enter Leetcode username"
-                            className="w-full outline-none h-10 placeholder:text-xs"
+                            className="w-full outline-none h-10 placeholder:text-xs bg-transparent"
                         />
                     </div>
                     <button
@@ -109,50 +100,56 @@ const ManagePage = () => {
                     </button>
                 </div>
             </div>
-            <div className="w-full max-w-6xl">
-                <Table className="min-w-full border-collapse">
-                    <Thead>
-                        <Tr className="bg-gray-200">
-                            <Th className="p-3 text-left">Leetcode Username</Th>
-                            <Th className="p-3 text-center">Total Questions</Th>
-                            <Th className="p-3 text-center">Hard</Th>
-                            <Th className="p-3 text-center">Medium</Th>
-                            <Th className="p-3 text-center">Easy</Th>
-                            <Th className="p-3 text-center">Actions</Th>
-                        </Tr>
-                    </Thead>
-                    <Tbody>
-                        {user.linkedto.map((leetId, index) => (
-                            <Tr key={index} className="border-t text-xs">
-                                <Td className="p-3 text-left font-semibold text-sm uppercase">{leetId.username}</Td>
-                                <Td className="p-3 text-center">
-                                    {leetId.stats[leetId.stats.length - 1].leetcode_count}
-                                </Td>
-                                <Td className="p-3 text-center">
-                                    {leetId.stats[leetId.stats.length - 1].leetcode_hard}
-                                </Td>
-                                <Td className="p-3">
-                                    {leetId.stats[leetId.stats.length - 1].leetcode_medium}
-                                </Td>
-                                <Td className="p-3">
-                                    {leetId.stats[leetId.stats.length - 1].leetcode_easy}
-                                </Td>
-                                <Td className="p-3 text-center flex flex-row items-center justify-center">
-                                    {RemovingId===leetId.username ? (
-                                        <div className="h-[30px]"><Loader className="text-xs" /></div>
-                                    ) : (
-                                        <MdDelete
-                                            onClick={() => {
-                                                removeLeetcodeUsername(leetId.username);
-                                            }}
-                                            className="cursor-pointer text-lg font-semibold hover:scale-105"
-                                        />
-                                    )}
-                                </Td>
+            <div className="w-full max-w-6xl bg-slate-50">
+                {user.linkedto.length === 0 ? (
+                    <div className="text-center py-10 text-gray-700 text-lg">
+                        No Leetcode IDs linked yet. Add a Leetcode username to start tracking your progress and unlock comprehensive statistics.
+                    </div>
+                ) : (
+                    <Table className="min-w-full border-collapse">
+                        <Thead>
+                            <Tr className="bg-gray-200">
+                                <Th className="p-3 text-left">Leetcode Username</Th>
+                                <Th className="p-3 text-center">Total Questions</Th>
+                                <Th className="p-3 text-center">Hard</Th>
+                                <Th className="p-3 text-center">Medium</Th>
+                                <Th className="p-3 text-center">Easy</Th>
+                                <Th className="p-3 text-center">Actions</Th>
                             </Tr>
-                        ))}
-                    </Tbody>
-                </Table>
+                        </Thead>
+                        <Tbody>
+                            {user.linkedto.map((leetId, index) => (
+                                <Tr key={index} className="border-t text-xs">
+                                    <Td className="p-3 text-left font-semibold text-sm uppercase">{leetId.username}</Td>
+                                    <Td className="p-3 text-center">
+                                        {leetId.stats[leetId.stats.length - 1].leetcode_count}
+                                    </Td>
+                                    <Td className="p-3 text-center">
+                                        {leetId.stats[leetId.stats.length - 1].leetcode_hard}
+                                    </Td>
+                                    <Td className="p-3 text-center">
+                                        {leetId.stats[leetId.stats.length - 1].leetcode_medium}
+                                    </Td>
+                                    <Td className="p-3 text-center">
+                                        {leetId.stats[leetId.stats.length - 1].leetcode_easy}
+                                    </Td>
+                                    <Td className="p-3 text-center flex flex-row items-center justify-center">
+                                        {removingId === leetId.username ? (
+                                            <div className="h-[30px]"><Loader className="text-xs" /></div>
+                                        ) : (
+                                            <MdDelete
+                                                onClick={() => {
+                                                    removeLeetcodeUsername(leetId.username);
+                                                }}
+                                                className="cursor-pointer text-lg font-semibold hover:scale-105"
+                                            />
+                                        )}
+                                    </Td>
+                                </Tr>
+                            ))}
+                        </Tbody>
+                    </Table>
+                )}
             </div>
         </div>
     );

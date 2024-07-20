@@ -1,6 +1,5 @@
 const BASE_URL = process.env.REACT_APP_API_URL;
 
-console.log(BASE_URL); // Logs the base URL to the console
 
 export const authenticationEndpoints = {
     LOGIN_API: `${BASE_URL}authentication/login`,

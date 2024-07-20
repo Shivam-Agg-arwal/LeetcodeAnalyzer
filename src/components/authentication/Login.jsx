@@ -44,7 +44,6 @@ export const Login = () => {
                     },
                 }
             );
-            console.log(response);
             if (response.data.success) {
                 dispatch(setToken(response.data.token));
                 dispatch(setUser(response.data.user));
@@ -56,7 +55,7 @@ export const Login = () => {
                     "Leetcode_analyser_user",
                     JSON.stringify(response.data.user)
                 );
-                navigate("/stats");
+                navigate("/manage");
             }
         } catch (error) {
             toast.error("Login failed");
@@ -66,7 +65,7 @@ export const Login = () => {
 
     return (
         <>
-            <div className="min-h-screen flex justify-center items-center bg-bgWhite ">
+            <div className="min-h-screen flex justify-center items-center bg-[#e9edf0] ">
                 <div className="w-7/12 mx-auto bg-white rounded-lg shadow-lg flex flex-row justify-between py-12 pl-16 pr-14 h- items-center">
                     {/* Left Side */}
                     <div className="flex items-start  justify-center  w-1/2 h-full flex-col pr-4 ">
@@ -83,7 +82,7 @@ export const Login = () => {
                                     <div className="flex flex-row items-center mt-1">
                                         <IoPerson />
                                     </div>
-                                    <div className="">
+                                    <div className="w-full">
                                         <input
                                             type="text"
                                             id="username"
@@ -107,7 +106,7 @@ export const Login = () => {
                                     <div className="flex flex-row items-center mt-1">
                                         <RiLockPasswordLine />
                                     </div>
-                                    <div className="">
+                                    <div className="w-full">
                                         <input
                                             type="password"
                                             id="password"

@@ -8,9 +8,15 @@ const tokenValid = tokenExpirationTime
     ? new Date().getTime() < parseInt(tokenExpirationTime, 10)
     : false;
 
+if(!tokenValid){
+    localStorage.clear();
+}
+
 const initialState = {
-    user: localStorage.getItem("Leetcode_analyser_user")
-        ? JSON.parse(localStorage.getItem("Leetcode_analyser_user"))
+    user: tokenValid
+        ? localStorage.getItem("Leetcode_analyser_user")
+            ? JSON.parse(localStorage.getItem("Leetcode_analyser_user"))
+            : null
         : null,
     token: tokenValid
         ? localStorage.getItem("Leetcode_analyser_token")
@@ -39,7 +45,7 @@ export const profileSlice = createSlice({
             );
             localStorage.setItem(
                 "Leetcode_analyser_token_expire",
-                new Date().getTime() + TOKEN_EXPIRATION_HOURS * 60 * 60 * 1000
+                new Date().getTime() +TOKEN_EXPIRATION_HOURS * 60 * 60 * 1000
             );
         },
         setSignupData(state, action) {

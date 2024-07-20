@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useSelector } from "react-redux";
 import calculateDaysFromToday from "../../utils/dayCounter";
 import { Line } from "react-chartjs-2";
@@ -16,6 +16,7 @@ import {
     Legend,
 } from "chart.js";
 import Stats from "./Stats";
+import { useNavigate } from "react-router-dom";
 
 ChartJS.register(
     CategoryScale,
@@ -35,14 +36,9 @@ const AnalysisPage = () => {
     const [type, setType] = useState(0);
     const [datasets, setDatasets] = useState([]);
     const [labels, setLabels] = useState([]);
-
-    // 0 => all
-    // 1 => easy
-    // 2 => medium
-    // 3 => hard
+    const navigate = useNavigate();
 
     const daysLen = calculateDaysFromToday(user.startDate);
-    console.log(daysLen);
 
     const getRandomColor = () => {
         const letters = "0123456789ABCDEF";
@@ -58,6 +54,7 @@ const AnalysisPage = () => {
     const generateDataset = (arr) => {
         const data = getData(arr.data);
         const color = getRandomColor();
+
         return {
             label: arr.username,
             data,
@@ -70,7 +67,7 @@ const AnalysisPage = () => {
     };
 
     const createDataSet = () => {
-        if (data === null) return;
+        if (!data) return;
         setDatasets(data.map((arr) => generateDataset(arr)));
     };
 
@@ -78,7 +75,7 @@ const AnalysisPage = () => {
         const [day, monthName, year] = dateString.split(" ");
         const monthIndex = new Date(
             Date.parse(monthName + " 1, 2022")
-        ).getMonth(); // Convert month name to index
+        ).getMonth();
         return new Date(year, monthIndex, parseInt(day, 10));
     };
 
@@ -87,32 +84,48 @@ const AnalysisPage = () => {
         const dates = [];
         let currentDate = startDate;
         while (currentDate <= endDate) {
-            dates.push(new Date(currentDate)); // Push a new date object to avoid mutation issues
+            dates.push(new Date(currentDate));
             currentDate = addDays(currentDate, 1);
         }
         return dates;
     };
 
     const processData = (count, arr) => {
-        return arr.slice(-count).map(({ leetcode_count, leetcode_easy, leetcode_medium, leetcode_hard }) => [
-            leetcode_count,
-            leetcode_easy,
-            leetcode_medium,
-            leetcode_hard,
-        ]);
+        return arr
+            .slice(-count)
+            .map(
+                ({
+                    leetcode_count,
+                    leetcode_easy,
+                    leetcode_medium,
+                    leetcode_hard,
+                }) => [
+                    leetcode_count,
+                    leetcode_easy,
+                    leetcode_medium,
+                    leetcode_hard,
+                ]
+            );
     };
+    console.log(new Date().getTime())
 
     const datasetCreator = () => {
         const temp2d = user.linkedto.reduce((acc, conn) => {
-            if (chosenId.includes(conn.username)) {
+            if (conn && chosenId.includes(conn.username)) {
                 const statsLen = conn.stats.length;
                 const toAdd = daysLen - statsLen;
-                const temp1d = toAdd <= 0
-                    ? processData(daysLen, conn.stats)
-                    : [
-                        ...new Array(toAdd).fill([null, null, null, null]),
-                        ...processData(statsLen, conn.stats),
-                    ];
+                const temp1d =
+                    toAdd <= 0
+                        ? processData(daysLen, conn.stats)
+                        : [
+                              ...new Array(toAdd).fill([
+                                  null,
+                                  null,
+                                  null,
+                                  null,
+                              ]),
+                              ...processData(statsLen, conn.stats),
+                          ];
 
                 acc.push({ data: temp1d, username: conn.username });
             }
@@ -123,13 +136,15 @@ const AnalysisPage = () => {
     };
 
     const manageLeetcodeIds = () => {
-        const ids = user.linkedto.map((conn) => conn.username);
+        const ids = user.linkedto.map((conn) => conn?.username).filter(Boolean);
         setLeetcodeIds(ids);
+        setChosenId(ids.slice(0, 3));
     };
 
     const addChosen = (id) => setChosenId((prev) => [...prev, id]);
 
-    const removeChosen = (id) => setChosenId((prev) => prev.filter((old) => old !== id));
+    const removeChosen = (id) =>
+        setChosenId((prev) => prev.filter((old) => old !== id));
 
     useEffect(() => {
         datasetCreator();
@@ -145,8 +160,8 @@ const AnalysisPage = () => {
 
     useEffect(() => {
         const startDateStr = user.startDate;
-        const endDate = new Date(); // Today's date
-        endDate.setDate(endDate.getDate() + 1); // Increase endDate by 1 day
+        const endDate = new Date();
+        endDate.setDate(endDate.getDate() + 1);
         const dates = generateDates(startDateStr, endDate);
         setLabels(dates.map((date) => format(date, "dd MMM yyyy")));
     }, [user.startDate]);
@@ -160,58 +175,124 @@ const AnalysisPage = () => {
         responsive: true,
         plugins: {
             legend: {
-                position: "left",
+                display: true,
+                position: "bottom",
+                align: "start",
+                labels: {
+                    color: "#2D3748",
+                    font: {
+                        size: 10,
+                        weight: "semibold",
+                    },
+                    boxWidth: 12,
+                    padding: 15,
+                    usePointStyle: true,
+                    pointStyle: "circle",
+                },
             },
             title: {
                 display: true,
                 text: "Progress Chart",
-            }
+                color: "#4A5568",
+                font: {
+                    size: 18,
+                    weight: "bold",
+                },
+                padding: {
+                    bottom: 20,
+                },
+            },
         },
         scales: {
             y: {
-                beginAtZero: true, // Ensure y-axis starts from 0
+                beginAtZero: true,
+                grid: {
+                    color: "#E2E8F0",
+                    borderDash: [5, 5], // Dashed grid lines
+                },
                 ticks: {
-                    callback: function(value) {
-                        return value; // Customize tick labels if needed
-                    }
-                }
-            }
-        }
+                    color: "#2D3748",
+                    font: {
+                        size: 12,
+                    },
+                },
+            },
+            x: {
+                grid: {
+                    color: "#E2E8F0",
+                    borderDash: [5, 5], // Dashed grid lines
+                },
+                ticks: {
+                    color: "#2D3748",
+                    font: {
+                        size: 12,
+                    },
+                },
+            },
+        },
     };
 
     return (
-        <div className="w-11/12 mx-auto my-10">
-            <div className="flex flex-row w-full gap-2">
-                <div className="h-[700px] w-[80%]">
-                    <Line data={chartData} options={options} className="w-full" />
+        <div className="w-11/12 mx-auto my-8 bg-white p-8 rounded-xl shadow-lg">
+            <div className="flex flex-col md:flex-row w-full gap-6">
+                <div className="md:w-3/4 w-full flex items-center bg-gray-50 p-4 rounded-lg shadow-md">
+                    <Line
+                        data={chartData}
+                        options={options}
+                        className="w-full h-[400px]"
+                    />
                 </div>
-                <div className="w-[20%] flex flex-col gap-4 mt-10">
-                    <div className="flex flex-row">
+                <div className="md:w-1/4 w-full flex flex-col gap-6 mt-6 md:mt-0">
+                    <div className="flex flex-col bg-gray-50 border border-gray-200 rounded-lg p-4 shadow-md">
                         {["All", "Easy", "Medium", "Hard"].map((label, index) => (
                             <div
                                 key={index}
                                 onClick={() => setType(index)}
-                                className={`border-[1px] font-semibold p-4 py-2 cursor-pointer text-sm border-black ${
-                                    type === index ? "text-white bg-black" : "text-black bg-white"
+                                className={`border-[1px] font-semibold w-full py-3 cursor-pointer text-sm border-gray-300 rounded-lg transition-colors duration-300 ease-in-out ${
+                                    type === index
+                                        ? "text-white bg-gray-800"
+                                        : "text-gray-800 bg-gray-50"
                                 }`}
                             >
                                 {label}
                             </div>
                         ))}
                     </div>
-                    <div className="flex flex-row flex-wrap border-[1px] border-black w-full max-h-[380px] overflow-y-auto">
-                        {leetcodeIds.map((id, index) => (
-                            <div key={index} className="px-5 py-2 flex flex-row gap-1 items-center">
-                                <div onClick={() => { chosenId.includes(id) ? removeChosen(id) : addChosen(id); }} className="text-blue">
-                                    {chosenId.includes(id) ? <IoIosCheckboxOutline /> : <MdCheckBoxOutlineBlank />}
+                    <div className="border-2 border-gray-800 rounded-lg p-4 bg-gray-50 shadow-md max-h-[400px] overflow-y-auto">
+                        <div className="flex flex-col gap-2">
+                            {leetcodeIds.map((id, index) => (
+                                <div
+                                    key={index}
+                                    className={`flex items-center gap-3 p-3 border-b border-gray-200 hover:bg-gray-100 cursor-pointer rounded-md transition-colors duration-300 ease-in-out ${
+                                        chosenId.includes(id) ? "bg-gray-100" : ""
+                                    }`}
+                                    onClick={() => {
+                                            chosenId.includes(id)
+                                                ? setChosenId((prev) => prev.filter((old) => old !== id))
+                                                : setChosenId((prev) => [...prev, id]);
+                                        }}
+                                    role="button"
+                                    aria-pressed={chosenId.includes(id)}
+                                >
+                                    <div className="text-gray-800">
+                                        {chosenId.includes(id) ? (
+                                            <IoIosCheckboxOutline />
+                                        ) : (
+                                            <MdCheckBoxOutlineBlank />
+                                        )}
+                                    </div>
+                                    <div className="text-sm text-gray-700 font-medium">
+                                        {id}
+                                    </div>
                                 </div>
-                                <div className="-mt-[2px] text-xs">{id}</div>
-                            </div>
-                        ))}
+                            ))}
+                        </div>
                     </div>
                 </div>
             </div>
-            <div><Stats type={type}/></div>
+            <div className="mt-8">
+                <Stats type={type} />
+            </div>
         </div>
     );
 };
