@@ -9,7 +9,7 @@ import { setUser } from "../../slices/profileSlice";
 import toast from "react-hot-toast";
 import { RiLockPasswordLine } from "react-icons/ri";
 import { IoPerson } from "react-icons/io5";
-import login from "../../images/Login.jpg"
+import login from "../../images/Login.jpg";
 
 export const Login = () => {
     const {
@@ -67,9 +67,9 @@ export const Login = () => {
     return (
         <>
             <div className="min-h-screen flex justify-center items-center bg-[#e9edf0] ">
-                <div className="w-7/12 mx-auto bg-white rounded-lg shadow-lg flex flex-row justify-between py-12 pl-16 pr-14 h- items-center">
+                <div className="md:w-7/12 w-10/12 mx-auto bg-white rounded-lg shadow-lg flex flex-row justify-between py-12 pl-16 pr-14 h- items-center">
                     {/* Left Side */}
-                    <div className="flex items-start  justify-center  w-1/2 h-full flex-col pr-4 ">
+                    <div className="flex items-start  justify-center  w-full  md:w-1/2 h-full flex-col pr-4 ">
                         <h1 className="text-3xl font-bold mb-4 w-full text-left mx-3 ">
                             Login
                         </h1>
@@ -135,6 +135,11 @@ export const Login = () => {
                                             </Link>
                                         </p>
                                     </div>
+                                        <div className="md:hidden hover:underline font-semibold flex flex-row justify-end items-end text-xs hover:scale-95">
+                                            <Link to="/signup">
+                                                Not Registered ?{" "}
+                                            </Link>
+                                        </div>
                                 </div>
                             </div>
                             <button
@@ -144,17 +149,13 @@ export const Login = () => {
                                 }`}
                                 disabled={loading}
                             >
-                                {loading?"Processing...":"Login"}
+                                {loading ? "Processing..." : "Login"}
                             </button>
                         </form>
                     </div>
-                    <div className="w-1/2 flex justify-center items-center bg-transaparent pl-8">
+                    <div className="md:w-1/2 hidden md:flex justify-center items-center bg-transaparent pl-8">
                         <div className="w-full flex flex-col gap-8">
-                            <img
-                                src={login}
-                                alt="login-img"
-                                className=""
-                            />
+                            <img src={login} alt="login-img" className="" />
                             <div className="hover:underline font-semibold flex flex-row justify-center items-center text-sm hover:scale-95">
                                 <Link to="/signup">Not Registered ? </Link>
                             </div>

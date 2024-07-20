@@ -62,10 +62,10 @@ function Signup() {
     };
 
     return (
-        <div className="md:w-full md:h-screen flex justify-center items-center bg-[#e9edf0]">
-            <div className="w-7/12 mx-auto bg-white rounded-lg shadow-lg flex flex-row justify-between py-12 pl-20 pr-14">
+        <div className="md:w-full h-screen flex justify-center items-center bg-[#e9edf0]">
+            <div className="md:w-7/12 w-10/12 mx-auto bg-white rounded-lg shadow-lg flex flex-row justify-between py-12 pl-20 pr-14">
                 {/* Left Side */}
-                <div className="flex items-start justify-center w-1/2 h-full flex-col pr-4">
+                <div className="flex items-start justify-center w-full md:w-1/2 h-full flex-col pr-4">
                     <h1 className="text-3xl font-bold mb-1 w-full text-left mx-3">
                         Sign up
                     </h1>
@@ -142,6 +142,9 @@ function Signup() {
                                 )}
                             </div>
                         </div>
+                        <div className="hover:underline font-semibold flex flex-row justify-end items-end text-xs md:hidden hover:scale-95">
+                            <Link to="/login">I am already a User</Link>
+                        </div>
                         <button
                             type="submit"
                             className={`text-white bg-[#007aff] px-6 py-2 rounded-md hover:scale-95 transition-all duration-200 opacity-85 w-fit font-semibold ${loading?"opacity-70":"opacity-100"}`}
@@ -151,7 +154,7 @@ function Signup() {
                         </button>
                     </form>
                 </div>
-                <div className="w-1/2 flex justify-center items-center bg-transparent pl-8">
+                <div className="w-1/2 hidden  md:flex justify-center items-center bg-transparent pl-8">
                     <div className="w-full flex flex-col gap-8">
                         <img
                             src={signup}
