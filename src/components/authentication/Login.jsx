@@ -144,7 +144,7 @@ export const Login = () => {
                                 }`}
                                 disabled={loading}
                             >
-                                Login
+                                {loading?"Processing...":"Login"}
                             </button>
                         </form>
                     </div>
