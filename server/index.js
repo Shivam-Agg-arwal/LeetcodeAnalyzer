@@ -32,7 +32,6 @@ cron.schedule('0 22 * * *', async () => {
     }
 });
 
-
 //Define the routes
 
 app.use("/api/v1/authentication",AuthenticationRoutes);
