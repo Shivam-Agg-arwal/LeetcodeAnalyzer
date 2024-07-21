@@ -1,4 +1,4 @@
-function calculateDaysFromToday(givenDate) {
+function calculateDaysFromToday(givenDate,lastDate) {
     // Convert date string to Date object
     const parseDate = (dateStr) => {
         const [day, month, year] = dateStr.split(' ');
@@ -8,7 +8,8 @@ function calculateDaysFromToday(givenDate) {
     };
 
     const startDate = parseDate(givenDate);
-    const today = new Date(); // Get today's date
+    const today = parseDate(lastDate) // Get today's date
+    today.setDate(today.getDate())
 
     // Calculate the difference in time
     const diffTime = Math.abs(today - startDate);

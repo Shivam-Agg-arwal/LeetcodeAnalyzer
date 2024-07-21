@@ -38,7 +38,6 @@ const AnalysisPage = () => {
     const [labels, setLabels] = useState([]);
     const navigate = useNavigate();
 
-    const daysLen = calculateDaysFromToday(user.startDate);
 
     const getRandomColor = () => {
         const letters = "0123456789ABCDEF";
@@ -112,7 +111,8 @@ const AnalysisPage = () => {
         const temp2d = user.linkedto.reduce((acc, conn) => {
             if (conn && chosenId.includes(conn.username)) {
                 const statsLen = conn.stats.length;
-                const toAdd = daysLen - statsLen;
+                const daysLen= calculateDaysFromToday(user.startDate,conn.stats[conn.stats.length-1].date) +1; 
+                const toAdd =calculateDaysFromToday(user.startDate,conn.stats[0].date);
                 const temp1d =
                     toAdd <= 0
                         ? processData(daysLen, conn.stats)
@@ -125,6 +125,8 @@ const AnalysisPage = () => {
                               ]),
                               ...processData(statsLen, conn.stats),
                           ];
+
+                console.log(temp1d)
 
                 acc.push({ data: temp1d, username: conn.username });
             }
