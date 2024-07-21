@@ -66,8 +66,8 @@ export const Login = () => {
 
     return (
         <>
-            <div className="min-h-screen flex justify-center items-center bg-[#e9edf0] ">
-                <div className="md:w-7/12 w-10/12 mx-auto bg-white rounded-lg shadow-lg flex flex-row justify-between py-12 pl-16 pr-14 h- items-center">
+            <div className="min-h-screen flex justify-center items-center bg-[#e9edf0] text-black">
+                <div className="lg:w-7/12 md:w-9/12 w-10/12 mx-auto bg-white rounded-lg shadow-lg flex flex-row justify-between py-12 lg:pl-16 lg:pr-14 px-5 items-center">
                     {/* Left Side */}
                     <div className="flex items-start  justify-center  w-full  md:w-1/2 h-full flex-col pr-4 ">
                         <h1 className="text-3xl font-bold mb-4 w-full text-left mx-3 ">

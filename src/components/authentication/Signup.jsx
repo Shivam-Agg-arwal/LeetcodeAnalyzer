@@ -62,8 +62,8 @@ function Signup() {
     };
 
     return (
-        <div className="md:w-full h-screen flex justify-center items-center bg-[#e9edf0]">
-            <div className="md:w-7/12 w-10/12 mx-auto bg-white rounded-lg shadow-lg flex flex-row justify-between py-12 pl-20 pr-14">
+        <div className="md:w-full h-screen flex justify-center items-center bg-[#e9edf0] text-black">
+            <div className="lg:w-7/12  md:w-9/12 w-10/12 mx-auto bg-white rounded-lg shadow-lg flex flex-row justify-between py-12 lg:pl-20 lg:pr-14 px-5">
                 {/* Left Side */}
                 <div className="flex items-start justify-center w-full md:w-1/2 h-full flex-col pr-4">
                     <h1 className="text-3xl font-bold mb-1 w-full text-left mx-3">
@@ -145,6 +145,7 @@ function Signup() {
                         <div className="hover:underline font-semibold flex flex-row justify-end items-end text-xs md:hidden hover:scale-95">
                             <Link to="/login">I am already a User</Link>
                         </div>
+                        <div className="flex  flex-row md:justify-start justify-end">
                         <button
                             type="submit"
                             className={`text-white bg-[#007aff] px-6 py-2 rounded-md hover:scale-95 transition-all duration-200 opacity-85 w-fit font-semibold ${loading?"opacity-70":"opacity-100"}`}
@@ -152,6 +153,7 @@ function Signup() {
                         >
                             {loading?"Processing...":"Register"}
                         </button>
+                        </div>
                     </form>
                 </div>
                 <div className="w-1/2 hidden  md:flex justify-center items-center bg-transparent pl-8">

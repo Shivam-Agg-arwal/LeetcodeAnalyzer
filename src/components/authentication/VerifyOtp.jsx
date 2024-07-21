@@ -71,7 +71,7 @@ const VerifyOtp = () => {
     };
 
     return (
-        <div className="flex items-center justify-center h-screen w-full bg-bgWhite">
+        <div className="flex items-center justify-center h-screen w-full bg-bgWhite text-black bg-[#e9edf0]">
             <div className="flex flex-col bg-white rounded-lg p-5 gap-2">
                 <h2 className="text-xl font-semibold">Verify Email</h2>
                 <div className="mx-auto w-11/12 mt-8 ">
