@@ -29,7 +29,7 @@ ChartJS.register(
 );
 
 const AnalysisPage = () => {
-    const { user } = useSelector((state) => state.profile);
+    const { user, lightMode } = useSelector((state) => state.profile);
     const [leetcodeIds, setLeetcodeIds] = useState([]);
     const [chosenId, setChosenId] = useState([]);
     const [data, setData] = useState(null);
@@ -107,7 +107,6 @@ const AnalysisPage = () => {
                 ]
             );
     };
-    console.log(new Date().getTime())
 
     const datasetCreator = () => {
         const temp2d = user.linkedto.reduce((acc, conn) => {
@@ -179,7 +178,7 @@ const AnalysisPage = () => {
                 position: "bottom",
                 align: "start",
                 labels: {
-                    color: "#2D3748",
+                    color: lightMode ? "#1A202C" : "#E2E8F0",
                     font: {
                         size: 10,
                         weight: "semibold",
@@ -193,7 +192,7 @@ const AnalysisPage = () => {
             title: {
                 display: true,
                 text: "Progress Chart",
-                color: "#4A5568",
+                color: lightMode ? "#1A202C" : "#E2E8F0",
                 font: {
                     size: 18,
                     weight: "bold",
@@ -207,25 +206,25 @@ const AnalysisPage = () => {
             y: {
                 beginAtZero: true,
                 grid: {
-                    color: "#E2E8F0",
-                    borderDash: [5, 5], // Dashed grid lines
+                    color: lightMode ? "#E2E8F0" : "#4A5568",
+                    borderDash: [5, 5],
                 },
                 ticks: {
-                    color: "#2D3748",
+                    color: lightMode ? "#1A202C" : "#E2E8F0",
                     font: {
-                        size: 12,
+                        size: 10,
                     },
                 },
             },
             x: {
                 grid: {
-                    color: "#E2E8F0",
-                    borderDash: [5, 5], // Dashed grid lines
+                    color: lightMode ? "#E2E8F0" : "#4A5568",
+                    borderDash: [5, 5],
                 },
                 ticks: {
-                    color: "#2D3748",
+                    color: lightMode ? "#1A202C" : "#E2E8F0",
                     font: {
-                        size: 12,
+                        size: 10,
                     },
                 },
             },
@@ -233,9 +232,9 @@ const AnalysisPage = () => {
     };
 
     return (
-        <div className="w-11/12 mx-auto my-8 bg-white p-8 rounded-xl shadow-lg">
+        <div className={`w-11/12 mx-auto my-8 p-8 rounded-xl shadow-lg ${lightMode ? "bg-white" : "bg-gray-900"}`}>
             <div className="flex flex-col md:flex-row w-full gap-6">
-                <div className="md:w-3/4 w-full flex items-center bg-gray-50 p-4 rounded-lg shadow-md">
+                <div className={`md:w-3/4 w-full flex items-center ${lightMode ? "bg-gray-50" : "bg-gray-800"} p-4 rounded-lg shadow-md`}>
                     <Line
                         data={chartData}
                         options={options}
@@ -243,45 +242,49 @@ const AnalysisPage = () => {
                     />
                 </div>
                 <div className="md:w-1/4 w-full flex flex-col gap-6 mt-6 md:mt-0">
-                    <div className="flex flex-col bg-gray-50 border border-gray-200 rounded-lg p-4 shadow-md">
+                    <div className={`flex flex-col border ${lightMode?"bg-gray-50  border-gray-200":"bg-gray-800 border-white"} rounded-lg p-4 shadow-md`}>
                         {["All", "Easy", "Medium", "Hard"].map((label, index) => (
                             <div
                                 key={index}
                                 onClick={() => setType(index)}
                                 className={`border-[1px] font-semibold w-full py-3 cursor-pointer text-sm border-gray-300 rounded-lg transition-colors duration-300 ease-in-out ${
-                                    type === index
+                                    lightMode?(type === index
                                         ? "text-white bg-gray-800"
-                                        : "text-gray-800 bg-gray-50"
+                                        : "text-gray-800 bg-gray-50"):(type !== index
+                                        ? "text-white bg-gray-800"
+                                        : "text-gray-800 bg-gray-50")
                                 }`}
                             >
                                 {label}
                             </div>
                         ))}
                     </div>
-                    <div className="border-2 border-gray-800 rounded-lg p-4 bg-gray-50 shadow-md max-h-[400px] overflow-y-auto">
+                    <div className={`border-2 rounded-lg p-4 ${lightMode ? "bg-gray-50 border-gray-800" : "bg-gray-800 border-gray-600"} shadow-md max-h-[400px] overflow-y-auto`}>
                         <div className="flex flex-col gap-2">
                             {leetcodeIds.map((id, index) => (
                                 <div
                                     key={index}
-                                    className={`flex items-center gap-3 p-3 border-b border-gray-200 hover:bg-gray-100 cursor-pointer rounded-md transition-colors duration-300 ease-in-out ${
-                                        chosenId.includes(id) ? "bg-gray-100" : ""
+                                    className={`flex items-center gap-3 p-3 border-b ${lightMode ? "border-gray-200 hover:bg-gray-100" : "border-gray-600 hover:bg-gray-700"} cursor-pointer rounded-md transition-colors duration-300 ease-in-out ${
+                                        chosenId.includes(id)
+                                            ? (lightMode ? "bg-gray-100" : "bg-gray-700")
+                                            : (lightMode ? "" : "bg-gray-800")
                                     }`}
                                     onClick={() => {
-                                            chosenId.includes(id)
-                                                ? setChosenId((prev) => prev.filter((old) => old !== id))
-                                                : setChosenId((prev) => [...prev, id]);
-                                        }}
+                                        chosenId.includes(id)
+                                            ? setChosenId((prev) => prev.filter((old) => old !== id))
+                                            : setChosenId((prev) => [...prev, id]);
+                                    }}
                                     role="button"
                                     aria-pressed={chosenId.includes(id)}
                                 >
-                                    <div className="text-gray-800">
+                                    <div className={`${lightMode ? "text-gray-800" : "text-gray-100"}`}>
                                         {chosenId.includes(id) ? (
                                             <IoIosCheckboxOutline />
                                         ) : (
                                             <MdCheckBoxOutlineBlank />
                                         )}
                                     </div>
-                                    <div className="text-sm text-gray-700 font-medium">
+                                    <div className={`text-sm ${lightMode ? "text-gray-700" : "text-gray-200"} font-medium`}>
                                         {id}
                                     </div>
                                 </div>

@@ -12,10 +12,10 @@ import Mover from "./components/common/Mover";
 import Footer from "./components/common/Footer";
 
 function App() {
-    const { user } = useSelector((state) => state.profile);
+    const { user,lightMode } = useSelector((state) => state.profile);
 
     return (
-        <div className="App bg-white min-h-screen flex flex-col">
+        <div className={`App  min-h-screen flex flex-col ${lightMode ? "bg-white text-gray-700" : "bg-gray-800 text-gray-200"}`}>
             {user && <Navbar />}
             <main className="flex-grow">
                 <Routes>

@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { MdDelete, MdSupervisorAccount } from "react-icons/md";
 import { managementEndpoints } from "../../api";
 import axios from "axios";
@@ -8,13 +8,42 @@ import toast from "react-hot-toast";
 import { Table, Thead, Tbody, Tr, Th, Td } from "react-super-responsive-table";
 import "react-super-responsive-table/dist/SuperResponsiveTableStyle.css";
 import Loader from "../common/Loader";
+import { IoMdArrowDropdown, IoMdArrowDropup } from "react-icons/io";
 
 const ManagePage = () => {
     const [leetcodeId, setLeetcodeId] = useState("");
     const [loading, setLoading] = useState(false);
     const [removingId, setRemovingId] = useState(null);
-    const { token, user } = useSelector((state) => state.profile);
+    const { token, user, lightMode } = useSelector((state) => state.profile);
     const dispatch = useDispatch();
+    const mapping = [
+        "leetcode_count",
+        "leetcode_hard",
+        "leetcode_medium",
+        "leetcode_easy",
+    ];
+
+    const [arr, setArr] = useState(user.linkedto);
+
+    const sortArr = (index, order) => {
+        const sortedArray = [...arr].sort((a, b) => {
+            if (
+                a.stats[a.stats.length - 1][mapping[index]] <
+                b.stats[b.stats.length - 1][mapping[index]]
+            ) {
+                return order === "asc" ? -1 : 1;
+            }
+            if (
+                a.stats[a.stats.length - 1][mapping[index]] >
+                b.stats[b.stats.length - 1][mapping[index]]
+            ) {
+                return order === "asc" ? 1 : -1;
+            }
+            return 0;
+        });
+        console.log(sortedArray);
+        setArr(sortedArray);
+    };
 
     const { ADD_ID_API, REMOVE_ID_API } = managementEndpoints;
 
@@ -41,13 +70,20 @@ const ManagePage = () => {
             dispatch(setUser(result.data));
             toast.success("Leetcode username added");
         } catch (error) {
-            console.log("Error occurred while adding the Leetcode ID", error.message);
+            console.log(
+                "Error occurred while adding the Leetcode ID",
+                error.message
+            );
             toast.error("Failed to add Leetcode ID");
         } finally {
             setLoading(false);
             setLeetcodeId("");
         }
     };
+
+    useEffect(()=>{
+        setArr(user.linkedto)
+    },[user])
 
     const removeLeetcodeUsername = async (lId) => {
         setRemovingId(lId);
@@ -63,7 +99,9 @@ const ManagePage = () => {
             );
             const result = response.data;
             if (!result.success) {
-                throw new Error("Error occurred while removing the Leetcode ID");
+                throw new Error(
+                    "Error occurred while removing the Leetcode ID"
+                );
             }
 
             dispatch(setUser(result.data));
@@ -79,7 +117,11 @@ const ManagePage = () => {
     return (
         <div className="flex flex-col items-center p-5 w-10/12 mx-auto">
             <div className="max-w-xl mb-6 mx-auto md:w-[500px] w-[80%] ">
-                <div className="flex items-center justify-between border-b-2 border-black pb-1 ">
+                <div
+                    className={`flex items-center justify-between border-b-2 ${
+                        lightMode ? "border-black" : "border-white"
+                    } pb-1 `}
+                >
                     <div className="flex items-center gap-4">
                         <MdSupervisorAccount className="text-xl" />
                         <input
@@ -91,7 +133,9 @@ const ManagePage = () => {
                         />
                     </div>
                     <button
-                        className={`text-black text-xs rounded-md hover:scale-95 mr-3 transition-all duration-200 opacity-85 font-semibold ${
+                        className={`${
+                            lightMode ? "text-black" : "text-white"
+                        } text-xs rounded-md hover:scale-95 mr-3 transition-all duration-200 opacity-85 font-semibold ${
                             loading ? "opacity-70" : "opacity-100"
                         }`}
                         onClick={addLeetcodeId}
@@ -101,46 +145,161 @@ const ManagePage = () => {
                     </button>
                 </div>
             </div>
-            <div className="w-full max-w-6xl bg-slate-50">
+            <div
+                className={`w-full max-w-6xl ${
+                    lightMode ? "bg-slate-50" : "bg-gray-300"
+                }`}
+            >
                 {user.linkedto.length === 0 ? (
                     <div className="text-center py-10 text-gray-700 text-lg">
-                        No Leetcode IDs linked yet. Add a Leetcode username to start tracking your progress and unlock comprehensive statistics.
+                        No Leetcode IDs linked yet. Add a Leetcode username to
+                        start tracking your progress and unlock comprehensive
+                        statistics.
                     </div>
                 ) : (
                     <Table className="min-w-full border-collapse">
                         <Thead>
-                            <Tr className="bg-gray-200">
-                                <Th className="p-3 text-left">Leetcode Username</Th>
-                                <Th className="p-3 text-center">Total Questions</Th>
-                                <Th className="p-3 text-center">Hard</Th>
-                                <Th className="p-3 text-center">Medium</Th>
-                                <Th className="p-3 text-center">Easy</Th>
+                            <Tr
+                                className={`${
+                                    lightMode
+                                        ? "bg-gray-200"
+                                        : "bg-gray-500 text-white"
+                                }`}
+                            >
+                                <Th className="p-3 text-left">
+                                    Leetcode Username
+                                </Th>
+                                <Th className="p-3 text-center ">
+                                    <div className="flex flex-row gap-2 justify-center items-center">
+                                        <div>Total Questions</div>
+                                        <div className="flex flex-col mt-1 -ml-1">
+                                            <IoMdArrowDropup
+                                                className="text-lg hover:scale-[0.8] cursor-pointer"
+                                                onClick={() => {
+                                                    sortArr(0, "des");
+                                                }}
+                                            />
+                                            <IoMdArrowDropdown
+                                                className="-mt-2 text-lg hover:scale-[0.8] cursor-pointer"
+                                                onClick={() => {
+                                                    sortArr(0, "asc");
+                                                }}
+                                            />
+                                        </div>
+                                    </div>
+                                </Th>
+                                <Th className="p-3 text-center ">
+                                    <div className="flex flex-row gap-2 justify-center items-center">
+                                        <div>Hard</div>
+                                        <div className="flex flex-col mt-1 -ml-1">
+                                            <IoMdArrowDropup
+                                                className="text-lg hover:scale-[0.8] cursor-pointer"
+                                                onClick={() => {
+                                                    sortArr(1, "des");
+                                                }}
+                                            />
+                                            <IoMdArrowDropdown
+                                                className="-mt-2 text-lg hover:scale-[0.8] cursor-pointer"
+                                                onClick={() => {
+                                                    sortArr(1, "asc");
+                                                }}
+                                            />
+                                        </div>
+                                    </div>
+                                </Th>
+                                <Th className="p-3 text-center ">
+                                    <div className="flex flex-row gap-2 justify-center items-center">
+                                        <div>Medium</div>
+                                        <div className="flex flex-col mt-1 -ml-1">
+                                            <IoMdArrowDropup
+                                                className="text-lg hover:scale-[0.8] cursor-pointer"
+                                                onClick={() => {
+                                                    sortArr(2, "des");
+                                                }}
+                                            />
+                                            <IoMdArrowDropdown
+                                                className="-mt-2 text-lg hover:scale-[0.8] cursor-pointer"
+                                                onClick={() => {
+                                                    sortArr(2, "asc");
+                                                }}
+                                            />
+                                        </div>
+                                    </div>
+                                </Th>
+                                <Th className="p-3 text-center ">
+                                    <div className="flex flex-row gap-2 justify-center items-center">
+                                        <div>Easy</div>
+                                        <div className="flex flex-col mt-1 -ml-1">
+                                            <IoMdArrowDropup
+                                                className="text-lg hover:scale-[0.8] cursor-pointer"
+                                                onClick={() => {
+                                                    sortArr(3, "des");
+                                                }}
+                                            />
+                                            <IoMdArrowDropdown
+                                                className="-mt-2 text-lg hover:scale-[0.8] cursor-pointer"
+                                                onClick={() => {
+                                                    sortArr(3, "asc");
+                                                }}
+                                            />
+                                        </div>
+                                    </div>
+                                </Th>
                                 <Th className="p-3 text-center">Actions</Th>
                             </Tr>
                         </Thead>
                         <Tbody>
-                            {user.linkedto.map((leetId, index) => (
-                                <Tr key={index} className="border-t text-xs">
-                                    <Td className="p-3 text-left font-semibold text-sm uppercase">{leetId.username}</Td>
-                                    <Td className="p-3 text-center">
-                                        {leetId.stats[leetId.stats.length - 1].leetcode_count}
+                            {arr.map((leetId, index) => (
+                                <Tr
+                                    key={index}
+                                    className={`border-t text-xs ${
+                                        lightMode
+                                            ? "text-black"
+                                            : "text-white bg-gray-700 border-slate-300"
+                                    }`}
+                                >
+                                    <Td className="p-3 text-left font-semibold text-sm uppercase">
+                                        {leetId.username}
                                     </Td>
                                     <Td className="p-3 text-center">
-                                        {leetId.stats[leetId.stats.length - 1].leetcode_hard}
+                                        {
+                                            leetId.stats[
+                                                leetId.stats.length - 1
+                                            ].leetcode_count
+                                        }
                                     </Td>
                                     <Td className="p-3 text-center">
-                                        {leetId.stats[leetId.stats.length - 1].leetcode_medium}
+                                        {
+                                            leetId.stats[
+                                                leetId.stats.length - 1
+                                            ].leetcode_hard
+                                        }
                                     </Td>
                                     <Td className="p-3 text-center">
-                                        {leetId.stats[leetId.stats.length - 1].leetcode_easy}
+                                        {
+                                            leetId.stats[
+                                                leetId.stats.length - 1
+                                            ].leetcode_medium
+                                        }
+                                    </Td>
+                                    <Td className="p-3 text-center">
+                                        {
+                                            leetId.stats[
+                                                leetId.stats.length - 1
+                                            ].leetcode_easy
+                                        }
                                     </Td>
                                     <Td className="p-3 text-center flex flex-row items-center justify-center">
                                         {removingId === leetId.username ? (
-                                            <div className="h-[30px]"><Loader className="text-xs" /></div>
+                                            <div className="h-[30px]">
+                                                <Loader className="text-xs" />
+                                            </div>
                                         ) : (
                                             <MdDelete
                                                 onClick={() => {
-                                                    removeLeetcodeUsername(leetId.username);
+                                                    removeLeetcodeUsername(
+                                                        leetId.username
+                                                    );
                                                 }}
                                                 className="cursor-pointer text-lg font-semibold hover:scale-105"
                                             />

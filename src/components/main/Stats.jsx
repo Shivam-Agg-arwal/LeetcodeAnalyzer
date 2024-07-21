@@ -15,15 +15,15 @@ const calculateDifference = (stats, index, type) => {
 };
 
 const Stats = ({ type }) => {
-    const { user } = useSelector((state) => state.profile);
+    const { user , lightMode } = useSelector((state) => state.profile);
     const [leetcodeId, setLeetcodeId] = useState(user.linkedto);
     console.log(leetcodeId);
 
     return (
-        <div className="p-6 bg-white rounded-lg shadow-lg font-quicksand">
+        <div className={`p-6 ${lightMode?"bg-white":"bg-gray-800"} rounded-lg shadow-lg font-quicksand`}>
             <Table className="w-full table-auto">
                 <Thead>
-                    <Tr className="bg-gray-100 text-gray-600">
+                    <Tr className={`${lightMode?"bg-gray-100 text-gray-600":"text-gray-100 bg-gray-600"}`}>
                         <Th className="px-4 py-2 border-b border-gray-300">Leetcode Username</Th>
                         <Th className="px-4 py-2 border-b border-gray-300">Last 1 Day</Th>
                         <Th className="px-4 py-2 border-b border-gray-300">Last 3 Days</Th>
@@ -41,7 +41,7 @@ const Stats = ({ type }) => {
                         const typeMapping = typemapping[type];
 
                         return (
-                            <Tr key={index} className="border-t hover:bg-gray-50">
+                            <Tr key={index} className={`border-t ${lightMode?"hover:bg-gray-50":"hover:bg-gray-700"}`}>
                                 <Td className="px-4 py-2 font-semibold border-b border-gray-300">{id.username}</Td>
                                 <Td className="px-4 py-2 border-b border-gray-300">{calculateDifference(stats, 1, typeMapping)}</Td>
                                 <Td className="px-4 py-2 border-b border-gray-300">{calculateDifference(stats, 3, typeMapping)}</Td>

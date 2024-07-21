@@ -24,6 +24,7 @@ const initialState = {
             : null
         : null,
     signUpData: null,
+    lightMode:true,
 };
 
 export const profileSlice = createSlice({
@@ -51,8 +52,11 @@ export const profileSlice = createSlice({
         setSignupData(state, action) {
             state.signUpData = action.payload;
         },
+        setLightMode(state,action){
+            state.lightMode=action.payload;
+        },
     },
 });
 
-export const { setUser, setToken, setSignupData } = profileSlice.actions;
+export const { setUser, setToken, setSignupData,setLightMode } = profileSlice.actions;
 export default profileSlice.reducer;
