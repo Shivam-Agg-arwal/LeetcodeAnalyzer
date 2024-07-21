@@ -60,7 +60,7 @@ const AnalysisPage = () => {
             data,
             fill: false,
             borderColor: color,
-            backgroundColor: "#ffffff",
+            backgroundColor: color,
             pointBorderColor: color,
             tension: 0.1,
         };
