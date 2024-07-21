@@ -41,7 +41,6 @@ const ManagePage = () => {
             }
             return 0;
         });
-        console.log(sortedArray);
         setArr(sortedArray);
     };
 
@@ -61,7 +60,6 @@ const ManagePage = () => {
                     },
                 }
             );
-            console.log(response);
             const result = response.data;
             if (!result.success) {
                 throw new Error("Error occurred while adding the Leetcode ID");

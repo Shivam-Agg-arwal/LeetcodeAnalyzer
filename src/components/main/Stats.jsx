@@ -18,7 +18,6 @@ const calculateDifference = (stats, index, type) => {
 const Stats = ({ type }) => {
     const { user, lightMode } = useSelector((state) => state.profile);
     const [leetcodeId, setLeetcodeId] = useState(user.linkedto);
-    console.log(leetcodeId);
 
     return (
         <div className={`p-6 ${lightMode ? "bg-white" : "bg-gray-800"} rounded-lg shadow-lg font-quicksand`}>

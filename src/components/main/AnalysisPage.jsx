@@ -126,7 +126,6 @@ const AnalysisPage = () => {
                               ...processData(statsLen, conn.stats),
                           ];
 
-                console.log(temp1d)
 
                 acc.push({ data: temp1d, username: conn.username });
             }
