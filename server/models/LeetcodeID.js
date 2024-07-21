@@ -16,6 +16,9 @@ const LeetcodeIDSchema=new mongoose.Schema({
         type:mongoose.Schema.Types.ObjectId,
         ref:"Statistics"
     }]
+},
+{
+    timestamps: true, // automatically adds createdAt and updatedAt fields
 });
 
 export default mongoose.model("LeetcodeID",LeetcodeIDSchema);

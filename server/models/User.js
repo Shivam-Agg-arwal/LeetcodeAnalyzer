@@ -19,6 +19,9 @@ const UserSchema=new mongoose.Schema({
     startDate:{
         type:String
     }
+},
+{
+    timestamps: true, // automatically adds createdAt and updatedAt fields
 });
 
 export default mongoose.model("User",UserSchema);
