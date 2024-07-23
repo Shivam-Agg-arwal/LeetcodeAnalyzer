@@ -1,12 +1,10 @@
 import express from 'express'
-import cron from 'node-cron'
 const app=express();
 
 //Routes import 
 import AuthenticationRoutes from './routes/Auth.js'
 import ManagementRoutes from './routes/Managing.js'
 import {dbConnect} from './config/DatabaseConnection.js'
-import { autoUpdate } from './controllers/Managing.js';
 
 import cookieParser from 'cookie-parser';
 import cors from 'cors';
@@ -22,15 +20,6 @@ app.use(cors({
     credentials: true,  // Allow cookies and other credentials
 }));
 dbConnect();
-
-cron.schedule('0 22 * * *', async () => {
-    try {
-        await autoUpdate(); // Call the function
-        console.log('Auto update ran successfully at 10 PM');
-    } catch (error) {
-        console.error('Error running auto update:', error.message);
-    }
-});
 
 //Define the routes
 
