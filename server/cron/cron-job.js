@@ -1,6 +1,6 @@
 // cron/cron-job.js
 import cron from 'node-cron';
-import { autoUpdate } from '../controllers/updateController'; // Importing the function
+import { autoUpdate } from '../controllers/Managing'; // Importing the function
 
 cron.schedule('* * * * *', async () => {
     try {

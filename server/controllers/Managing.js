@@ -281,6 +281,7 @@ export const fetchData = async (req, res) => {
 };
 
 export const autoUpdate = async (req, res) => {
+    console.log("auto updation running ");
     try {
         const leetcodeProfiles = await LeetcodeID.find({})
             .populate("stats")
