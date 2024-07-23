@@ -7,6 +7,6 @@ import {auth} from '../Authentication/auth.js'
 router.post("/AddLeetcodeId",auth,AddLeetcodeId);
 router.post("/RemoveLeetcodeId",auth,RemoveLeetcodeId);
 router.post("/fetchData",auth,fetchData);
-router.post("/autoUpdate",autoUpdate);
+router.get("/autoUpdate",autoUpdate);
 
 export default router;
