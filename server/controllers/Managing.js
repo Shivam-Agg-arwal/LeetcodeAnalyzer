@@ -53,7 +53,8 @@ export const AddLeetcodeId = async (req, res) => {
         }
 
         const currDate = dateFinder();
-        if (user.linkedto.length === 0) {
+        if (user.startDate === undefined || user.startDate !== null) {
+            console.log(user.startDate);
             user.startDate = currDate;
         }
 
