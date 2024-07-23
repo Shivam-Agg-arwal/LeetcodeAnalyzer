@@ -43,7 +43,7 @@ const AnalysisPage = () => {
     const [labels, setLabels] = useState([]);
     const [graphOptionsVisible, setGraphOptionsVisible] = useState(false);
     const [DayDataset, setDayDataset] = useState([]);
-    const [mode, setMode] = useState(1);
+    const [mode, setMode] = useState(0);
 
 
     useEffect(() => {
@@ -60,7 +60,6 @@ const AnalysisPage = () => {
     }, [chosenId]);
 
     const dayWiseDataCreator = () => {
-        console.log("One data hai ye ");
         const updatedContent = data.map((entry) => {
             const { data: content, username } = entry;
             const tempData = [];
@@ -87,11 +86,9 @@ const AnalysisPage = () => {
     };
     const createAllDatasets = () => {
         if (!data) return;
-        console.log("data ye hai ", data);
         const datasets = data.map((arr) => generateDataset(arr));
         setDatasets(datasets);
         dayWiseDataCreator();
-        console.log("dataset hai ye ", datasets);
     };
 
     useEffect(() => {
