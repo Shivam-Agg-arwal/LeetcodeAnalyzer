@@ -20,7 +20,7 @@ const Stats = ({ type }) => {
     const [leetcodeId, setLeetcodeId] = useState(user.linkedto);
 
     return (
-        <div className={`p-6 ${lightMode ? "bg-white" : "bg-gray-800"} rounded-lg shadow-lg font-quicksand`}>
+        <div className={`p-6 ${lightMode ? "bg-white" : "bg-gray-800"} rounded-lg shadow-lg font-quicksand `}>
             <Table className="w-full table-auto">
                 <Thead>
                     <Tr className={`${lightMode ? "bg-gray-100 text-gray-600" : "text-gray-100 bg-gray-600"}`}>
