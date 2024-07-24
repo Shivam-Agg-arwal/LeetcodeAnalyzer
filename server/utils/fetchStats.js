@@ -1,22 +1,34 @@
-export const fetchLeetcodeStats = async (leetcode_id) => {
+export const fetchLeetcodeStats = async (username) => {
     try {
-        const url = `${process.env.BASE_URL}${leetcode_id}`;
-        const response = await fetch(url, {
-            method: "GET", // Specify method as GET
-            headers: {
-                'Content-Type': 'application/json', // Optional: Specify content type
+        const endpoint = process.env.BASE_URL;
+        // const endpoint = "";
+        const query = `
+            {
+                userContestRanking(username: "${username}") {
+                    rating
+                }
+                matchedUser(username: "${username}") {
+                    username
+                    submitStats: submitStatsGlobal {
+                        acSubmissionNum {
+                            count
+                        }
+                    }
+                }
             }
+        `;
+
+        const url = `${endpoint}?query=${encodeURIComponent(query)}`;
+
+
+        const response = await fetch(url, {
+            method: "GET",
         });
 
-        // Check if the response is ok (status in the range 200-299)
-        if (!response.ok) {
-            throw new Error(`HTTP error! Status: ${response.status}`);
-        }
-
         const result = await response.json();
-        return result; // Return the result for further use
+        return result;
     } catch (error) {
         console.error("Error fetching LeetCode stats:", error.message);
-        return {"status":"fail"}
+        return { status: "fail" };
     }
 };

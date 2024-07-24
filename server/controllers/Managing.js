@@ -45,7 +45,8 @@ export const AddLeetcodeId = async (req, res) => {
         }
 
         const response = await fetchLeetcodeStats(leetcodeId);
-        if (response.status !== "success") {
+
+        if (response.errors) {
             return res.status(400).json({
                 success: false,
                 message: "Invalid Leetcode ID",
@@ -53,12 +54,19 @@ export const AddLeetcodeId = async (req, res) => {
         }
 
         const currDate = dateFinder();
-        if (user.startDate === undefined || user.startDate !== null) {
+        if (user.startDate === undefined || user.startDate === null) {
             user.startDate = currDate;
         }
+        const countStats =
+            response.data.matchedUser.submitStats.acSubmissionNum;
+        const all = countStats[0].count;
+        const hard = countStats[3].count;
+        const medium = countStats[2].count;
+        const easy = countStats[1].count;
+
 
         const organizedStats = preprocessStats(
-            response,
+            [all, hard, medium, easy],
             leetcodeDetails._id,
             currDate
         );
@@ -215,16 +223,27 @@ export const fetchData = async (req, res) => {
                     console.warn(`Leetcode ID ${id} not found`);
                     return;
                 }
-
                 const response = await fetchLeetcodeStats(
                     leetcodeDetails.username
                 );
-                if (response.status === "success") {
+
+                if (response.errors) {
+                    throw new Error("Id is not present ");
+                } else {
+                    const countStats =
+                        response.data.matchedUser.submitStats.acSubmissionNum;
+                    const all = countStats[0].count;
+                    const hard = countStats[3].count;
+                    const medium = countStats[2].count;
+                    const easy = countStats[1].count;
+
+
                     const organizedStats = preprocessStats(
-                        response,
+                        [all, hard, medium, easy],
                         leetcodeDetails._id,
                         currDate
                     );
+
                     const statsDetails = await Statistics.create(
                         organizedStats
                     );
@@ -242,10 +261,6 @@ export const fetchData = async (req, res) => {
 
                     leetcodeDetails.stats.push(statsDetails);
                     await leetcodeDetails.save();
-                } else {
-                    console.warn(
-                        `Failed to fetch stats for ${leetcodeDetails.username}`
-                    );
                 }
             } catch (error) {
                 console.error(
@@ -288,36 +303,61 @@ export const autoUpdate = async (req, res) => {
             .exec();
         const currDate = dateFinder();
 
-        const updateLinkedToPromises = leetcodeProfiles.map(async (leetcodeDetails) => {
-            try {
-                const response = await fetchLeetcodeStats(leetcodeDetails.username);
-                let organizedStats;
+        const updateLinkedToPromises = leetcodeProfiles.map(
+            async (leetcodeDetails) => {
+                try {
+                    const response = await fetchLeetcodeStats(
+                        leetcodeDetails.username
+                    );
 
-                if (response && response.status === "success") {
-                    organizedStats = preprocessStats(response, leetcodeDetails._id, currDate);
-                } else {
-                    organizedStats = {
-                        date: currDate,
-                        leetcode_count: null,
-                        leetcode_easy: null,
-                        leetcode_medium: null,
-                        leetcode_hard: null,
-                        leetcode_id: leetcodeDetails._id,
-                    };
+                    let organizedStats;
+                    if (response.errors) {
+                        organizedStats = {
+                            date: currDate,
+                            leetcode_count: null,
+                            leetcode_easy: null,
+                            leetcode_medium: null,
+                            leetcode_hard: null,
+                            leetcode_id: leetcodeDetails._id,
+                        };
+                    } else {
+                        const countStats =
+                            response.data.matchedUser.submitStats
+                                .acSubmissionNum;
+                        const all = countStats[0].count;
+                        const hard = countStats[3].count;
+                        const medium = countStats[2].count;
+                        const easy = countStats[1].count;
+
+                        organizedStats = preprocessStats(
+                            [all, hard, medium, easy],
+                            leetcodeDetails._id,
+                            currDate
+                        );
+
+                    }
+
+                    const statsDetails = await Statistics.create(
+                        organizedStats
+                    );
+
+                    await updateLeetcodeStats(
+                        leetcodeDetails,
+                        statsDetails,
+                        currDate
+                    );
+                } catch (error) {
+                    console.error(
+                        `Error processing Leetcode ID ${leetcodeDetails._id}:`,
+                        error.message
+                    );
                 }
-
-                const statsDetails = await Statistics.create(organizedStats);
-
-                await updateLeetcodeStats(leetcodeDetails, statsDetails, currDate);
-
-            } catch (error) {
-                console.error(`Error processing Leetcode ID ${leetcodeDetails._id}:`, error.message);
             }
-        });
+        );
 
         await Promise.all(updateLinkedToPromises);
 
-        console.log("successs")
+        console.log("successs");
 
         return res.status(200).json({
             success: true,
@@ -334,7 +374,8 @@ export const autoUpdate = async (req, res) => {
 
 const updateLeetcodeStats = async (leetcodeDetails, statsDetails, currDate) => {
     if (leetcodeDetails.stats.length > 0) {
-        const lastStat = leetcodeDetails.stats[leetcodeDetails.stats.length - 1];
+        const lastStat =
+            leetcodeDetails.stats[leetcodeDetails.stats.length - 1];
         if (lastStat.date === currDate) {
             leetcodeDetails.stats.pop();
             await Statistics.findByIdAndDelete(lastStat._id);
