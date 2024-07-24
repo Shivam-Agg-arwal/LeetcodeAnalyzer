@@ -9,19 +9,15 @@ const StatisticsSchema = new mongoose.Schema(
         },
         leetcode_count: {
             type: Number,
-            required: true,
         },
         leetcode_easy: {
             type: Number,
-            required: true,
         },
         leetcode_medium: {
             type: Number,
-            required: true,
         },
         leetcode_hard: {
             type: Number,
-            required: true,
         },
         leetcode_contest_rating: {
             type: Number,
