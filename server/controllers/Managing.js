@@ -279,65 +279,45 @@ export const fetchData = async (req, res) => {
         });
     }
 };
-
 export const autoUpdate = async (req, res) => {
-    console.log("auto updation running ");
+    console.log("Auto update running");
+
     try {
         const leetcodeProfiles = await LeetcodeID.find({})
             .populate("stats")
             .exec();
         const currDate = dateFinder();
 
-        const updateLinkedToPromises = leetcodeProfiles.map(
-            async (leetcodeDetails) => {
-                try {
-                    const response = await fetchLeetcodeStats(
-                        leetcodeDetails.username
-                    );
-                    let organizedStats;
-                    if (response && response.status === "success") {
-                        organizedStats = preprocessStats(
-                            response,
-                            leetcodeDetails._id,
-                            currDate
-                        );
-                    } else {
-                        organizedStats = {
-                            date: currDate,
-                            leetcode_count: null,
-                            leetcode_easy: null,
-                            leetcode_medium: null,
-                            leetcode_hard: null,
-                            leetcode_id: leetcodeDetails._id,
-                        };
-                    }
-                    const statsDetails = await Statistics.create(
-                        organizedStats
-                    );
+        const updateLinkedToPromises = leetcodeProfiles.map(async (leetcodeDetails) => {
+            try {
+                const response = await fetchLeetcodeStats(leetcodeDetails.username);
+                let organizedStats;
 
-                    if (leetcodeDetails.stats.length > 0) {
-                        const lastStat =
-                            leetcodeDetails.stats[
-                                leetcodeDetails.stats.length - 1
-                            ];
-                        if (lastStat.date === currDate) {
-                            leetcodeDetails.stats.pop();
-                            await Statistics.findByIdAndDelete(lastStat._id);
-                        }
-                    }
-
-                    leetcodeDetails.stats.push(statsDetails);
-                    await leetcodeDetails.save();
-                } catch (error) {
-                    console.error(
-                        `Error processing Leetcode ID ${leetcodeDetails._id}:`,
-                        error.message
-                    );
+                if (response && response.status === "success") {
+                    organizedStats = preprocessStats(response, leetcodeDetails._id, currDate);
+                } else {
+                    organizedStats = {
+                        date: currDate,
+                        leetcode_count: null,
+                        leetcode_easy: null,
+                        leetcode_medium: null,
+                        leetcode_hard: null,
+                        leetcode_id: leetcodeDetails._id,
+                    };
                 }
+
+                const statsDetails = await Statistics.create(organizedStats);
+
+                await updateLeetcodeStats(leetcodeDetails, statsDetails, currDate);
+
+            } catch (error) {
+                console.error(`Error processing Leetcode ID ${leetcodeDetails._id}:`, error.message);
             }
-        );
+        });
 
         await Promise.all(updateLinkedToPromises);
+
+        console.log("successs")
 
         return res.status(200).json({
             success: true,
@@ -350,4 +330,17 @@ export const autoUpdate = async (req, res) => {
             message: "Error occurred while auto-updating",
         });
     }
+};
+
+const updateLeetcodeStats = async (leetcodeDetails, statsDetails, currDate) => {
+    if (leetcodeDetails.stats.length > 0) {
+        const lastStat = leetcodeDetails.stats[leetcodeDetails.stats.length - 1];
+        if (lastStat.date === currDate) {
+            leetcodeDetails.stats.pop();
+            await Statistics.findByIdAndDelete(lastStat._id);
+        }
+    }
+
+    leetcodeDetails.stats.push(statsDetails);
+    await leetcodeDetails.save();
 };
