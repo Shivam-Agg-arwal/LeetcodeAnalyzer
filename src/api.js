@@ -1,6 +1,5 @@
 const BASE_URL = process.env.REACT_APP_API_URL;
 
-
 export const authenticationEndpoints = {
     LOGIN_API: `${BASE_URL}authentication/login`,
     SIGNUP_API: `${BASE_URL}authentication/signin`,
