@@ -12,6 +12,9 @@ function calculateDaysFromToday(givenDate,lastDate) {
     today.setDate(today.getDate())
 
     // Calculate the difference in time
+
+    if(today-startDate<0)   return 0;
+    
     const diffTime = Math.abs(today - startDate);
     const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24)); // Convert milliseconds to days
 
