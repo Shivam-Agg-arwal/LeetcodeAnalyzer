@@ -4,6 +4,7 @@ import { fetchLeetcodeStats } from "../utils/fetchStats.js";
 import { dateFinder } from "../utils/DateFinder.js";
 import { preprocessStats } from "../utils/StatsPreProcesser.js";
 import Statistics from "../models/Statistics.js";
+import { mailSender } from "../utils/mailSender.js";
 
 export const AddLeetcodeId = async (req, res) => {
     try {
@@ -384,4 +385,74 @@ const updateLeetcodeStats = async (leetcodeDetails, statsDetails, currDate) => {
 
     leetcodeDetails.stats.push(statsDetails);
     await leetcodeDetails.save();
+};
+
+
+export const sendMails = async (req, res) => {
+    try {
+        const emails1 = [];
+        const htmlContent=`<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LeetCode Analyzer - Registration Issue Resolved</title>
+</head>
+<body style="font-family: Arial, sans-serif; background-color: #f4f4f4; margin: 0; padding: 0;">
+    <table width="100%" cellpadding="0" cellspacing="0">
+        <tr>
+            <td align="center" style="padding: 20px 0;">
+                <table width="600px" cellpadding="0" cellspacing="0" style="background-color: #ffffff; border-radius: 10px; overflow: hidden;">
+                    <tr>
+                        <td align="center" style="background-color: #007aff; padding: 20px; color: #ffffff;">
+                            <h1>LeetCode Analyzer</h1>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td style="padding: 30px; color: #333333;">
+                            <h2 style="font-size: 24px;">We Apologize for the Inconvenience</h2>
+                            <p style="font-size: 16px; line-height: 1.6;">
+                                We're reaching out to apologize for the technical issues that may have prevented you from registering on our site, LeetCode Analyzer. We understand how frustrating this can be and appreciate your patience.
+                            </p>
+                            <p style="font-size: 16px; line-height: 1.6;">
+                                The issue has been resolved, and you can now complete your registration without any trouble. Please click the button below to return to our site and get started.
+                            </p>
+                            <p style="text-align: center; margin: 40px 0;">
+                                <a href="https://leetcode-analyzer.vercel.app/signup" style="background-color: #007aff; color: #ffffff; padding: 15px 25px; text-decoration: none; border-radius: 5px; font-size: 16px;">
+                                    Complete Your Registration
+                                </a>
+                            </p>
+                            <p style="font-size: 16px; line-height: 1.6;">
+                                If you encounter any further issues or have any questions, please feel free to reach out. We're here to help!
+                            </p>
+                            <p style="font-size: 16px; line-height: 1.6;">
+                                Thank you for your understanding and support.
+                            </p>
+                            <p style="font-size: 16px; line-height: 1.6;">
+                                Best regards,<br>
+                                Shivam Aggarwal<br>
+                                LeetCode Analyzer Team
+                            </p>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td align="center" style="background-color: #f4f4f4; padding: 20px; font-size: 12px; color: #999999;">
+                            © 2024 LeetCode Analyzer. All rights reserved.
+                        </td>
+                    </tr>
+                </table>
+            </td>
+        </tr>
+    </table>
+</body>
+</html>
+`;
+        await Promise.all(emails.map(async (email) => {
+            await mailSender(email, "Apologies for the Inconvenience: Registration Issue Resolved", htmlContent);
+        }));
+        res.status(200).send("Emails sent successfully!");
+    } catch (error) {
+        console.error("kuch toh gadbad hogyi", error);
+        res.status(500).send("Failed to send emails.");
+    }
 };

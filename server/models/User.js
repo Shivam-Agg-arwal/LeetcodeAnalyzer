@@ -18,6 +18,14 @@ const UserSchema=new mongoose.Schema({
     }],
     startDate:{
         type:String
+    },
+    token: {
+        type: String,
+        default: null,  
+    },
+    expirationTime: {
+        type: Date,
+        default: null, 
     }
 },
 {
