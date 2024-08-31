@@ -28,6 +28,7 @@ const ForgotPassword = () => {
             const response = await axios.post(RESETPASSTOKEN_API, {email:email});
             if (response.data.success) {
                 toast.success(response.data.toastMessage);
+				setEmailSent(true);
             }
         } catch (error) {
 			if (
@@ -44,7 +45,6 @@ const ForgotPassword = () => {
 			toast.dismiss(loadingToast);
 			setLoading(false);
 		}
-        setEmailSent(true);
     };
 
     return (
