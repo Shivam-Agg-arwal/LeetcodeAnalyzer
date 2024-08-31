@@ -22,17 +22,16 @@ const ForgotPassword = () => {
     const sendMail = async () => {
         // Implement resend email functionality here
 
+		const loadingToast = toast.loading("Sending Mail...");
         try {
 			setLoading(true);
-            const loadingToast = toast.loading("Sending Mail...");
             const response = await axios.post(RESETPASSTOKEN_API, {email:email});
             if (response.data.success) {
                 toast.success(response.data.toastMessage);
             }
-            toast.dismiss(loadingToast);
         } catch (error) {
-            if (
-                error.response &&
+			if (
+				error.response &&
                 error.response.data &&
                 error.response.data.toastMessage
             ) {
@@ -42,6 +41,7 @@ const ForgotPassword = () => {
             }
         }
 		finally{
+			toast.dismiss(loadingToast);
 			setLoading(false);
 		}
         setEmailSent(true);
