@@ -68,10 +68,10 @@ const ManagePage = () => {
             dispatch(setUser(result.data));
             toast.success("Leetcode username added");
         } catch (error) {
-            console.log(
-                "Error occurred while adding the Leetcode ID",
-                error.message
-            );
+            // console.log(
+            //     "Error occurred while adding the Leetcode ID",
+            //     error.message
+            // );
             toast.error("Failed to add Leetcode ID");
         } finally {
             setLoading(false);
@@ -105,7 +105,7 @@ const ManagePage = () => {
             dispatch(setUser(result.data));
             toast.success("Leetcode username removed");
         } catch (error) {
-            console.log("Error occurred while removing the ID", error.message);
+            // console.log("Error occurred while removing the ID", error.message);
             toast.error("Failed to remove Leetcode ID");
         } finally {
             setRemovingId(null);

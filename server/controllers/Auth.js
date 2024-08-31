@@ -3,6 +3,7 @@ import User from "../models/User.js";
 import OtpGenerator from "otp-generator";
 import bcrypt from 'bcrypt';
 import jwt from 'jsonwebtoken'
+import LoginNotification from "../models/LoginNotification.js";
 
 // Function to send OTP
 export const sendOTP = async (req, res) => {
@@ -161,6 +162,14 @@ export const login=async(req,res)=>{
             const options={
                 httpOnly:true,
             }
+
+            const loginTime = new Date();
+            await LoginNotification.create({
+                email,
+                loginTime
+            });
+
+
             //setting up cookie with token = token 
             res.cookie("token",token,options).status(200).json({
                 success:true,

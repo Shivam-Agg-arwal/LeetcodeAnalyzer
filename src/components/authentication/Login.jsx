@@ -56,21 +56,20 @@ export const Login = () => {
                     "Leetcode_analyser_user",
                     JSON.stringify(response.data.user)
                 );
-                console.log('dekh ',response.data.user);
                 if (response.data.user.linkedto.length > 0) {
                     let chosenId = [];
                     chosenId.push(response.data.user.linkedto[0].username);
-                    console.log(chosenId);
                 
                     // Store the array of strings in localStorage
                     localStorage.setItem("chosens", JSON.stringify(chosenId));
                 }
+
+
                 
                 navigate("/manage");
             }
         } catch (error) {
             toast.error("Login failed");
-            console.log(error);
         }
         setLoading(false);
     };

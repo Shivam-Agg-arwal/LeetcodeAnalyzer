@@ -358,8 +358,6 @@ export const autoUpdate = async (req, res) => {
 
         await Promise.all(updateLinkedToPromises);
 
-        console.log("successs");
-
         return res.status(200).json({
             success: true,
             message: "Auto-update completed successfully",

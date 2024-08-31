@@ -175,7 +175,6 @@ const AnalysisPage = () => {
                         conn.stats[conn.stats.length - 1].date
                     ) + 1;
 
-                    console.log(daysLen);
 
                 const toAdd = calculateDaysFromToday(
                     user.startDate,
@@ -288,7 +287,6 @@ const AnalysisPage = () => {
                     className={`md:w-3/4 w-full flex relative items-center ${lightMode ? "bg-gray-50" : "bg-gray-800"
                         } p-4 rounded-lg shadow-md`}
                 >
-                {console.log(chartData)}
                     <Line
                         data={chartData}
                         options={options}

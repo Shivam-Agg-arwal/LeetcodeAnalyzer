@@ -7,7 +7,6 @@ import crypto from "crypto";
 export const resetPasswordToken = async (req, res) => {
     try {
         const { email } = req.body;
-        console.log("Received reset request for email:", email);
 
         const user = await User.findOne({ email });
         if (!user) {
@@ -30,7 +29,7 @@ export const resetPasswordToken = async (req, res) => {
             { new: true }
         );
 
-        const url = `http://localhost:3000/update-password/${token}`;
+        const url = `https://leetcode-analyzer.vercel.app/update-password/${token}`;
         const emailContent = `
     <p>We received a request to reset your password associated with your account. To proceed, please click the link below:</p>
     <p><a href="${url}">Reset Your Password</a></p>
@@ -47,7 +46,6 @@ export const resetPasswordToken = async (req, res) => {
             "Reset Your Password - LeetCode Analyzer",
             emailContent
         );
-        console.log("Reset email sent successfully.");
 
         return res.status(200).json({
             success: true,
@@ -68,8 +66,6 @@ export const resetPasswordToken = async (req, res) => {
 export const resetPassword = async (req, res) => {
     try {
         const { password, confirmPassword, token } = req.body;
-
-        console.log("Password reset attempt:", password, confirmPassword);
 
         if (password !== confirmPassword) {
             return res.status(400).json({

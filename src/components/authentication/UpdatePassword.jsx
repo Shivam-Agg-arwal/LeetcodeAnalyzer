@@ -27,7 +27,6 @@ function UpdatePassword() {
             formData.append("password", data.password);
             formData.append("confirmPassword", data.confirmPassword);
             const response = await axios.post(RESETPASSWORD_API, {token:token,password:data.password,confirmPassword:data.confirmPassword});
-            console.log(response);
             if (response.data.success) {
                 toast.success(response.data.toastMessage);
                 navigate("/login");

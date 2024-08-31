@@ -24,10 +24,8 @@ const ForgotPassword = () => {
 
         try {
 			setLoading(true);
-            console.log(RESETPASSTOKEN_API);
             const loadingToast = toast.loading("Sending Mail...");
             const response = await axios.post(RESETPASSTOKEN_API, {email:email});
-            console.log(response);
             if (response.data.success) {
                 toast.success(response.data.toastMessage);
             }
