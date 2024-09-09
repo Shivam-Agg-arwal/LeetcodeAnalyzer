@@ -372,13 +372,14 @@ export const autoUpdate = async (req, res) => {
 };
 
 const updateLeetcodeStats = async (leetcodeDetails, statsDetails, currDate) => {
-    if (leetcodeDetails.stats.length > 0) {
+    while (leetcodeDetails.stats.length > 0) {
         const lastStat =
             leetcodeDetails.stats[leetcodeDetails.stats.length - 1];
         if (lastStat.date === currDate) {
             leetcodeDetails.stats.pop();
             await Statistics.findByIdAndDelete(lastStat._id);
         }
+        else    break;
     }
 
     leetcodeDetails.stats.push(statsDetails);
