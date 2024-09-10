@@ -20,6 +20,8 @@ export const fetchLeetcodeStats = async (username) => {
 
         const url = `${endpoint}?query=${encodeURIComponent(query)}`;
 
+        console.log(url);
+
 
         const response = await fetch(url, {
             method: "GET",
