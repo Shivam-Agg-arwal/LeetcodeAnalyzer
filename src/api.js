@@ -8,6 +8,7 @@ export const authenticationEndpoints = {
     RESETPASSTOKEN_API:`${BASE_URL}authentication/resetPasswordToken`,
 };
 
+
 export const managementEndpoints = {
     ADD_ID_API: `${BASE_URL}management/AddLeetcodeId`,
     REMOVE_ID_API: `${BASE_URL}management/RemoveLeetcodeId`,
