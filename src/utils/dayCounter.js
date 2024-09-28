@@ -22,3 +22,5 @@ function calculateDaysFromToday(givenDate,lastDate) {
 }
 
 export default calculateDaysFromToday;
+
+
